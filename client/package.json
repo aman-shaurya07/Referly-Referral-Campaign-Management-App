@@ -2,7 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "https://referly-client.onrender.com",
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
     "@testing-library/dom": "^10.4.0",
