@@ -156,7 +156,7 @@ const Dashboard = () => {
                   <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 mt-2">
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(`http://localhost:3000/ref/${c._id}/${user.email}`);
+                        navigator.clipboard.writeText(`${process.env.REACT_APP_FRONTEND_URL}/ref/${c._id}/${user.email}`);
                         alert("Referral link copied!");
                       }}
                       className="flex-1 bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition text-sm"
