@@ -32,7 +32,7 @@ const UploadCRM = () => {
     }
 
     try {
-      const res = await axios.post(`${process.env.BACKEND_URL}/api/crm/add-single`, single, {
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/crm/add-single`, single, {
         withCredentials: true,
       });
       setFormMessage(res.data.message);
