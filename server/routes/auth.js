@@ -5,10 +5,25 @@ const router = express.Router();
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 
+// router.get('/google/callback', passport.authenticate('google', {
+//   successRedirect: `${process.env.FRONTEND_URL}/`,
+//   failureRedirect: `${process.env.FRONTEND_URL}`,
+// }));
+
+
+
 router.get('/google/callback', passport.authenticate('google', {
-  successRedirect: `${process.env.FRONTEND_URL}/`,
-  failureRedirect: `${process.env.FRONTEND_URL}`,
-}));
+  failureRedirect: `${process.env.FRONTEND_URL}`
+}), (req, res) => {
+  console.log("🔐 Authenticated user:", req.user);
+  res.redirect(`${process.env.FRONTEND_URL}/`);
+});
+
+
+
+
+
+
 
 router.get("/me", (req, res) => {
   if (req.isAuthenticated()) {
