@@ -1,0 +1,45 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import CampaignCreation from './pages/CampaignCreation';
+import ValidateReward from './pages/ValidateReward';
+import UploadCRM from './pages/UploadCRM';
+import Analytics from "./pages/Analytics";
+
+
+import Dashboard from './pages/Dashboard';
+import CampaignsPage from './pages/CampaignsPage';
+import MyReferrals from './pages/MyReferrals';
+import ReferralSubmissionPage from './pages/ReferralSubmissionPage';
+import CustomersPage from './pages/CustomersPage';
+import LoyalReferralSubmissionPage from "./pages/LoyalReferralSubmissionPage";
+
+
+
+
+
+
+function App() {  
+  return (
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/validate-reward" element={<ValidateReward />} />
+          <Route path="/upload-crm" element={<UploadCRM />} />
+          <Route path="/analytics" element={<Analytics />} />
+
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/campaigns" element={<CampaignsPage />} />
+          <Route path="/create-campaign" element={<CampaignCreation />} />
+          <Route path="/my-referrals" element={<MyReferrals />} />
+          <Route path="/customers" element={<CustomersPage />} />
+          <Route path="/ref/:campaignId/:referrerEmail" element={<ReferralSubmissionPage />} />
+          <Route path="/ref-loyal/:campaignId/:businessEmail/:loyalCustomerEmail" element={<LoyalReferralSubmissionPage />} />
+
+
+        </Routes>
+      </Layout>
+    </Router>
+  );
+}
+
+export default App;
