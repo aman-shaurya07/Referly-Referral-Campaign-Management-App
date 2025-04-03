@@ -32,22 +32,43 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const mongoURI = process.env.MONGO_URI;
 
+// app.use(session({
+//   secret: "your_session_secret",
+//   resave: false,
+//   saveUninitialized: false,
+//   store: MongoStore.create({
+//     mongoUrl: mongoURI,
+//     collectionName: "sessions",
+//     ttl: 14 * 24 * 60 * 60 // Optional: 14 days expiration
+//   }),
+//   cookie: {
+//     maxAge: 24 * 60 * 60 * 1000, // 1 day
+//     httpOnly: true,
+//     sameSite: "none",
+//     secure: true
+//   },
+// }));
+
+app.set('trust proxy', 1); // Trust Render's proxy (very important)
+
 app.use(session({
   secret: "your_session_secret",
   resave: false,
   saveUninitialized: false,
+  proxy: true, // needed when using secure cookies behind a proxy
   store: MongoStore.create({
-    mongoUrl: mongoURI,
+    mongoUrl: process.env.MONGO_URI,
     collectionName: "sessions",
-    ttl: 14 * 24 * 60 * 60 // Optional: 14 days expiration
+    ttl: 14 * 24 * 60 * 60
   }),
   cookie: {
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: "none",
-    secure: true
-  },
+    secure: true,         // Required for SameSite=None
+    sameSite: "None"
+  }
 }));
+
 
 
 
