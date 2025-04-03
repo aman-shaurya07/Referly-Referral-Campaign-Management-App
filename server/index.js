@@ -53,6 +53,8 @@ app.use(session({
 
 
 
+
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -64,6 +66,20 @@ app.use("/api/referral", referralRoutes);
 app.use('/api/crm', crmRoutes);
 app.use('/api/ai', aiRoutes);
 app.use("/api/customers", customerRoutes);
+
+
+
+
+
+app.get("/debug-session", (req, res) => {
+  res.json({
+    session: req.session,
+    user: req.user,
+    isAuthenticated: req.isAuthenticated()
+  });
+});
+
+
 
 
 
