@@ -1,5 +1,8 @@
 
+
+
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const UploadCRM = () => {
@@ -7,6 +10,8 @@ const UploadCRM = () => {
   const [csvMessage, setCsvMessage] = useState("");
   const [formMessage, setFormMessage] = useState("");
   const [single, setSingle] = useState({ name: "", email: "" });
+
+  const navigate = useNavigate();
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -45,7 +50,15 @@ const UploadCRM = () => {
   return (
     <div className="w-full max-w-3xl mx-auto mt-10 px-4 sm:px-6 lg:px-8">
       <div className="bg-white p-6 rounded-lg shadow space-y-8">
-        <h2 className="text-2xl font-semibold text-center sm:text-left">📤 Upload Customers</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-semibold">📤 Add Customers</h2>
+          <button
+            onClick={() => navigate("/customers")}
+            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 text-sm"
+          >
+            ⬅ Back to Customers
+          </button>
+        </div>
 
         {/* CSV Upload */}
         <div className="border p-4 rounded-lg">

@@ -7,6 +7,9 @@ const CampaignsPage = () => {
   const [referrals, setReferrals] = useState([]);
   const [user, setUser] = useState(null);
 
+  const [emailLoyalCustomerMsg, setEmailLoyalCustomerMsg] = useState("");
+
+
   useEffect(() => {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/me`, { withCredentials: true })
       .then(res => setUser(res.data))
@@ -28,10 +31,15 @@ const CampaignsPage = () => {
 
   const handleSendToLoyalCustomers = async (campaignId) => {
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/referral/email-loyal/${campaignId}`, {}, {
-        withCredentials: true,
-      });
-      alert("Emails sent to loyal customers!");
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/referral/email-loyal/${campaignId}`,
+        {},
+        { withCredentials: true }
+      );
+  
+      const msg = res.data.message;
+      setEmailLoyalCustomerMsg(msg); // still update state if needed
+      alert(msg || "Emails sent to loyal customers!");
     } catch (err) {
       console.error("Error sending emails to loyal customers", err);
       alert("Something went wrong");

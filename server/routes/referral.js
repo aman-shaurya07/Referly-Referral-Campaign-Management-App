@@ -417,13 +417,22 @@ router.post("/email-loyal/:campaignId", async (req, res) => {
     }
 
     // Step 3: Find loyal customers
+    const findCustomers = await BusinessCustomer.find({
+      businessEmail
+    });
+
+    if(findCustomers.length == 0){
+      return res.status(200).json({  message: "No customers found yet. Please add customers manually or through referrals. Additionally, a customer becomes loyal after successfully completing 2 different referrals. A referral is considered complete when a customer uses a referral link, and completes the required task in the campaign."});
+    }
+
+
     const loyalCustomers = await BusinessCustomer.find({
       businessEmail,
       isLoyal: true,
     });
 
     if (loyalCustomers.length === 0) {
-      return res.status(200).json({ message: "No loyal customers found." });
+      return res.status(200).json({  message: "No loyal customers available. A customer becomes loyal after successfully completing 2 different referrals. A referral is considered complete when a customer uses a referral link, and completes the required task in the campaign."});
     }
 
     // Step 4: Send email to each loyal customer

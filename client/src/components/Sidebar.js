@@ -35,7 +35,7 @@ const Sidebar = () => {
     { name: 'Referrals', path: '/my-referrals' },
     { name: 'Customers', path: '/customers' },
     { name: 'Analytics', path: '/analytics' },
-    { name: 'Add Customers', path: '/upload-crm' },
+    // { name: 'Add Customers', path: '/upload-crm' },
   ];
 
   const isActive = (path) => location.pathname === path;
