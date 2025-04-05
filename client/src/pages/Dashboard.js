@@ -13,8 +13,6 @@ const Dashboard = () => {
   const [referrals, setReferrals] = useState([]);
   const [user, setUser] = useState(null);
 
-  const [emailLoyalCustomerMsg, setEmailLoyalCustomerMsg] = useState("");
-
 
   const [campaignAnalytics, setCampaignAnalytics] = useState([]);
 
@@ -55,7 +53,6 @@ const Dashboard = () => {
       );
   
       const msg = res.data.message;
-      setEmailLoyalCustomerMsg(msg); // still update state if needed
       alert(msg || "Emails sent to loyal customers!");
     } catch (err) {
       console.error("Error sending emails to loyal customers", err);
