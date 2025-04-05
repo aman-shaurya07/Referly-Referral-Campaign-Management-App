@@ -31,7 +31,7 @@ const Sidebar = () => {
   const navLinks = [
     { name: 'Dashboard', path: '/' },
     {name: 'Campaigns', path: '/campaigns'},
-    { name: 'Create Campaign', path: '/create-campaign' },
+    // { name: 'Create Campaign', path: '/create-campaign' },
     { name: 'Referrals', path: '/my-referrals' },
     { name: 'Customers', path: '/customers' },
     { name: 'Analytics', path: '/analytics' },

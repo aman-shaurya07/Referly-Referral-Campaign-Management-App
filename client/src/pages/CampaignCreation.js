@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const CampaignCreation = () => {
@@ -10,6 +11,9 @@ const CampaignCreation = () => {
     rewardDescription: '',
     messageToCustomers: ''
   });
+
+  const navigate = useNavigate();
+
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -83,7 +87,17 @@ Goal: ${userPrompt}
 
   return (
     <div className="max-w-3xl mx-auto bg-white shadow-md rounded-xl p-4 sm:p-6 md:p-8 mt-6">
-      <h2 className="text-2xl sm:text-3xl font-semibold mb-4 text-gray-800">Create New Campaign</h2>
+      {/* <h2 className="text-2xl sm:text-3xl font-semibold mb-4 text-gray-800">Create New Campaign</h2> */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">Create New Campaign</h2>
+        <button
+          onClick={() => navigate("/campaigns")}
+          className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 text-sm"
+        >
+          ⬅ Back to Campaigns
+        </button>
+      </div>
+
 
       {/* AI Assistant */}
       <div className="mb-6 text-right">
