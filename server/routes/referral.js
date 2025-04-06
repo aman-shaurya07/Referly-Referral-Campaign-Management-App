@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const BusinessCustomer = require("../models/BusinessCustomer");
 const sendEmail = require("../utils/sendEmail");
 const axios = require("axios");
+const Campaign = require("../models/Campaign");
 
 
 const taskZapUrl = process.env.ZAPIER_TASK_COMPLETED_URL;
