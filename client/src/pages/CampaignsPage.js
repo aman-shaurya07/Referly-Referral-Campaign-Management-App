@@ -27,25 +27,6 @@ const CampaignsPage = () => {
   }, []);
 
 
-  const handleSendToLoyalCustomers = async (campaignId) => {
-    try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/referral/email-loyal/${campaignId}`,
-        {},
-        { withCredentials: true }
-      );
-  
-      const msg = res.data.message;
-      alert(msg || "Emails sent to loyal customers!");
-    } catch (err) {
-      console.error("Error sending emails to loyal customers", err);
-      alert("Something went wrong");
-    }
-  };
-  
-
-
-
 
   return (
     <div className="p-4 sm:p-6 md:p-8 w-full overflow-x-hidden">
@@ -93,14 +74,8 @@ const CampaignsPage = () => {
                     >
                         🔗 Copy Referral Link
                     </button>
-                    
-                    <button
-                        onClick={() => handleSendToLoyalCustomers(c._id)}
-                        className="flex-1 bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition text-sm"
-                    >
-                        🎯 Email Loyal Customers
-                    </button>
-                </div>
+
+                </div>  
 
 
 

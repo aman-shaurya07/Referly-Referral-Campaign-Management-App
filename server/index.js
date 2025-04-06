@@ -3,12 +3,17 @@ const cors = require("cors");
 const passport = require("passport");
 require("dotenv").config();
 require("./config/passport");
+const mongoose = require("mongoose");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const authRoutes = require("./routes/auth");
 const campaignRoutes = require("./routes/campaign");
 const referralRoutes = require("./routes/referral");
 const crmRoutes = require('./routes/crm');
 const aiRoutes = require('./routes/ai');
 const customerRoutes = require("./routes/customers");
-
+const zapierRoutes = require('./routes/zapier');
+const sendMailToFriend = require('./routes/sendReferral')
 
 
 
@@ -19,12 +24,6 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-
-
-
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
-const mongoose = require("mongoose");
 
 
 
@@ -61,15 +60,16 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Auth route
-const authRoutes = require("./routes/auth");
+
 app.use("/auth", authRoutes);
 app.use("/api/campaigns", campaignRoutes);
 app.use("/api/referral", referralRoutes);
 app.use('/api/crm', crmRoutes);
 app.use('/api/ai', aiRoutes);
 app.use("/api/customers", customerRoutes);
-
+app.use('/api/zapier', require('./routes/zapier'));
+app.use('/api/zapier', zapierRoutes);
+app.use('/api', sendMailToFriend);
 
 
 
@@ -111,7 +111,6 @@ mongoose.connect(process.env.MONGO_URI, {
 
 
 
-
 // const express = require("express");
 // const cors = require("cors");
 // const passport = require("passport");
@@ -120,14 +119,15 @@ mongoose.connect(process.env.MONGO_URI, {
 // const mongoose = require("mongoose");
 // const session = require("express-session");
 // const MongoStore = require("connect-mongo");
-
-// // Import Routes
 // const authRoutes = require("./routes/auth");
 // const campaignRoutes = require("./routes/campaign");
 // const referralRoutes = require("./routes/referral");
 // const crmRoutes = require('./routes/crm');
 // const aiRoutes = require('./routes/ai');
 // const customerRoutes = require("./routes/customers");
+// const zapierRoutes = require('./routes/zapier');
+// const sendMailToFriend = require('./routes/sendReferral')
+
 
 // const app = express();
 // const PORT = process.env.PORT || 5001;
@@ -166,6 +166,7 @@ mongoose.connect(process.env.MONGO_URI, {
 //   }
 // }));
 
+
 // // Passport setup
 // app.use(passport.initialize());
 // app.use(passport.session());
@@ -177,6 +178,11 @@ mongoose.connect(process.env.MONGO_URI, {
 // app.use('/api/crm', crmRoutes);
 // app.use('/api/ai', aiRoutes);
 // app.use("/api/customers", customerRoutes);
+// app.use('/api/zapier', require('./routes/zapier'));
+// app.use('/api/zapier', zapierRoutes);
+// app.use('/api', sendMailToFriend);
+
+
 
 // // Debugging session info
 // app.get("/debug-session", (req, res) => {

@@ -5,7 +5,7 @@ const businessCustomerSchema = new mongoose.Schema({
   customerEmail: String,
   source: {
     type: String,
-    enum: ['CRM', 'Referral', "Loyal Referral", 'Manual'],
+    enum: ['Referral', "Promoter", "CRM", "Manual"],
     required: true
   },
   isLoyal: { type: Boolean, default: false },

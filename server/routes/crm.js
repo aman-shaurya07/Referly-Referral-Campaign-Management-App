@@ -51,7 +51,8 @@ router.post('/upload', upload.single('file'), async (req, res) => {
           businessEmail,
           customerEmail: email,
           name,
-          source: "CRM",
+          source: "Manual",
+          isLoyal:true
         });
       }
     });
@@ -139,6 +140,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         customerEmail: email.trim(),
         name: name.trim(),
         source: "Manual",
+        isLoyal:true
       });
   
       res.status(200).json({ message: "Customer added successfully!" });

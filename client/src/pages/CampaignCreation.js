@@ -39,17 +39,54 @@ const CampaignCreation = () => {
 
   const prevStep = () => setStep(step - 1);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    let campaignId = null;
+  
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/campaigns`, form, { withCredentials: true });
-      alert("Campaign created!");
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/campaigns`,
+        form,
+        { withCredentials: true }
+      );
+  
+      campaignId = res.data._id; // or res.data.id
+    } catch (err) {
+      alert("❌ Failed to create campaign.");
+      console.log("Campaign Error:", err);
+      return;
+    }
+  
+    // 📨 Campaign created successfully — now send emails
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/campaigns/${campaignId}/notify-promoters`,
+        {},
+        { withCredentials: true }
+      );
+    
+      if (res.data.message === "No promoters found") {
+        alert("✅ Campaign created! No loyal customers yet, so no emails were sent.");
+      } else if (res.data.failed?.length > 0) {
+        alert(`Campaign created ✅ but some emails failed: ${res.data.failed.join(', ')}`);
+      } else {
+        alert("✅ Campaign created & promoters notified!");
+      }
+    
       window.location.href = "/";
     } catch (err) {
-      alert("Failed to create campaign.");
-      console.log(err);
+      alert("✅ Campaign created, but failed to notify promoters due to a server error.");
+      console.log("Notification Error:", err);
+      window.location.href = "/";
     }
   };
+  
+
+
+
+
 
   const handleAI = async () => {
     const userPrompt = prompt("Describe your campaign goal (e.g. get more reviews, invite friends, etc.)");

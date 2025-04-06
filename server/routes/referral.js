@@ -268,106 +268,96 @@ module.exports = router;
 
 
 
-
-
-
-
-// Route: /api/referral/loyal-submit
-router.post("/loyal-submit", async (req, res) => {
-  const { campaignId, businessEmail, loyalCustomerEmail, newUserName, newUserEmail } = req.body;
-
-  if (!campaignId || !businessEmail || !loyalCustomerEmail || !newUserName || !newUserEmail) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
-
+router.post("/signup", async (req, res) => {
   try {
-    // Prevent duplicate referral for same user and campaign
+    const { campaignId, promoterEmail, name, email } = req.body;
 
-    const alreadyCustomer = await BusinessCustomer.findOne({
-      businessEmail,
-      customerEmail: newUserEmail,
-    });
+    if (!campaignId || !promoterEmail || !name || !email) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
+    // Get campaign + business
+    const campaign = await Campaign.findById(campaignId).populate("business");
+    if (!campaign || !campaign.business) {
+      return res.status(404).json({ message: "Campaign not found or has no business" });
+    }
+
+    const businessEmail = campaign.business.email;
+
+    // ✅ If already a customer → no referral allowed
+    const alreadyCustomer = await BusinessCustomer.findOne({ customerEmail: email, businessEmail });
     if (alreadyCustomer) {
-      return res.status(400).json({ message: "This user is already a customer of the business" });
-    }
-
-
-
-
-
-    const alreadyReferred = await Referral.findOne({
-      campaignId,
-      email: newUserEmail,
-    });
-
-    if (alreadyReferred) {
-      return res.status(400).json({ message: "User already referred for this campaign" });
-    }
-
-    // Add referral entry
-    const rewardCode = uuidv4().slice(0, 8);
-
-    const referral = new Referral({
-      campaignId,
-      businessEmail,
-      referrerEmail: loyalCustomerEmail,
-      name: newUserName,
-      email: newUserEmail,
-      rewardCode,
-    });
-
-    await referral.save();
-
-
-    await axios.post(taskZapUrl, {
-      email: newUserEmail,
-      name:newUserName,
-      campaignId,
-      rewardCode,
-      completedAt: referral.completedAt,
-      businessEmail,
-    });
-
-    // Send email to new user
-    const newUserHTML = `
-      <h3>🎉 You've been referred by a loyal customer!</h3>
-      <p>Thanks for joining us, ${newUserName}.</p>
-      <p><strong>Your Reward Code:</strong> ${rewardCode}</p>
-      <p>You can redeem it here: <a href="${process.env.FRONTEND_URL}/validate-reward">Redeem Now</a></p>
-    `;
-
-    await sendEmail(newUserEmail, "Welcome! Here's your reward 🎁", newUserHTML);
-
-    // Send email to loyal customer
-    const loyalCustomerHTML = `
-      <h3>✅ Your referral was successful!</h3>
-      <p>You referred <strong>${newUserEmail}</strong>.</p>
-      <p><strong>Your Reward Code:</strong> ${rewardCode}</p>
-      <p>Redeem it here: <a href="${process.env.FRONTEND_URL}/validate-reward">Redeem Now</a></p>
-    `;
-
-    await sendEmail(loyalCustomerEmail, "Thanks for referring! 🎁", loyalCustomerHTML);
-
-    // Save user to business customers (if not exists)
-    const exists = await BusinessCustomer.findOne({
-      businessEmail,
-      customerEmail: newUserEmail,
-    });
-
-    if (!exists) {
-      await BusinessCustomer.create({
-        businessEmail,
-        customerEmail: newUserEmail,
-        name: newUserName,
-        source: "Loyal Referral",
+      return res.status(400).json({
+        message: "This user is already a customer of this business and can't be referred again.",
       });
     }
 
-    return res.status(200).json({ message: "Referral submitted successfully" });
+    // ✅ If already completed this campaign before → don't allow again
+    const existingReferral = await Referral.findOne({
+      campaignId,
+      email,
+    });
+
+    if (existingReferral) {
+      return res.status(400).json({ message: "You've already completed this campaign!" });
+    }
+
+    // ✅ Create referral
+    const rewardCode = uuidv4().slice(0, 8);
+    const referral = await Referral.create({
+      campaignId,
+      businessEmail,
+      referrerEmail: promoterEmail,
+      name,
+      email,
+      rewardCode,
+      completedAt: new Date(),
+    });
+
+    // ✅ Create new BusinessCustomer
+    await BusinessCustomer.create({
+      name,
+      customerEmail: email,
+      businessEmail,
+      source: "Promoter",
+    });
+
+    // ✅ Notify CRM/Zapier
+    await axios.post(taskZapUrl, {
+      businessEmail,
+      email,
+      name,
+      campaignId,
+      rewardCode,
+      completedAt: referral.completedAt,
+    });
+
+    // ✅ Send reward email to new user
+    const htmlNewUser = `
+      <h3>🎉 You've earned a reward!</h3>
+      <p>Thanks for completing the task.</p>
+      <p><strong>Your Reward Code:</strong> ${rewardCode}</p>
+      <p>You can redeem it here: <a href="${process.env.FRONTEND_URL}/validate-reward">Validate Reward</a></p>
+    `;
+    await sendEmail(email, "Your Reward Code 🎁", htmlNewUser);
+
+    // ✅ Send reward email to promoter
+    const htmlPromoter = `
+      <h3>🎉 Thanks, your friend just joined!</h3>
+      <p>As a promoter, here's your reward code:</p>
+      <p><strong>Your Reward Code:</strong> ${rewardCode}</p>
+      <p>You can redeem it here: <a href="${process.env.FRONTEND_URL}/validate-reward">Validate Reward</a></p>
+    `;
+    await sendEmail(promoterEmail, "Your Promoter Reward 🎁", htmlPromoter);
+
+    return res.status(200).json({
+      message: "🎉 Submitted and reward email sent!",
+      rewardCode,
+    });
+
   } catch (err) {
-    console.error("Loyal Referral error:", err);
-    return res.status(500).json({ message: "Something went wrong" });
+    console.error("❌ Error in referral signup:", err);
+    return res.status(500).json({ message: "Something went wrong. Please try again." });
   }
 });
 
@@ -376,92 +366,6 @@ router.post("/loyal-submit", async (req, res) => {
 
 
 
+  module.exports = router;
 
-
-const Campaign = require('../models/Campaign');
-
-
-// ✅ Helper: Mark customers as loyal
-const markLoyalCustomers = async (businessEmail) => {
-  const customers = await BusinessCustomer.find({ businessEmail });
-
-  for (const customer of customers) {
-    const completedReferrals = await Referral.countDocuments({
-      businessEmail,
-      email: customer.customerEmail,
-      completedAt: { $exists: true },
-    });
-
-    if (completedReferrals >= 2 && !customer.isLoyal) {
-      customer.isLoyal = true;
-      await customer.save();
-    }
-  }
-};
-
-// ✅ API: Send referral links to loyal customers
-router.post("/email-loyal/:campaignId", async (req, res) => {
-  try {
-    const businessEmail = req.user?.email;
-    const { campaignId } = req.params;
-
-
-
-    // Step 1: Mark loyal customers
-    await markLoyalCustomers(businessEmail);
-
-    // Step 2: Fetch campaign info
-    const campaign = await Campaign.findById(campaignId);
-    if (!campaign) {
-      return res.status(404).json({ message: "Campaign not found" });
-    }
-
-    // Step 3: Find loyal customers
-    const findCustomers = await BusinessCustomer.find({
-      businessEmail
-    });
-
-    if(findCustomers.length == 0){
-      return res.status(200).json({  message: "No customers found yet. Please add customers manually or through referrals. Additionally, a customer becomes loyal after successfully completing 2 different referrals. A referral is considered complete when a customer uses a referral link, and completes the required task in the campaign."});
-    }
-
-
-    const loyalCustomers = await BusinessCustomer.find({
-      businessEmail,
-      isLoyal: true,
-    });
-
-    if (loyalCustomers.length === 0) {
-      return res.status(200).json({  message: "No loyal customers available. A customer becomes loyal after successfully completing 2 different referrals. A referral is considered complete when a customer uses a referral link, and completes the required task in the campaign."});
-    }
-
-    // Step 4: Send email to each loyal customer
-    for (const customer of loyalCustomers) {
-      const referralLink = `${process.env.FRONTEND_URL}/ref-loyal/${campaignId}/${businessEmail}/${customer.customerEmail}`;
-
-      const html = `
-        <h3>🎉 Refer & Earn Again!</h3>
-        <p>As a loyal customer, you can earn more rewards!</p>
-        <p>Share this link with your friends:</p>
-        <p><a href="${referralLink}" target="_blank">${referralLink}</a></p>
-        <p>Every time someone joins using your link, both of you earn rewards!</p>
-      `;
-
-      await sendEmail(customer.customerEmail, "Your Special Referral Link 🎁", html);
-    }
-
-    res.json({ message: "Referral emails sent to loyal customers." });
-  } catch (err) {
-    console.error("Error emailing loyal customers:", err);
-    res.status(500).json({ message: "Failed to send referral links" });
-  }
-});
-
-
-
-
-
-
-
-module.exports = router;
 

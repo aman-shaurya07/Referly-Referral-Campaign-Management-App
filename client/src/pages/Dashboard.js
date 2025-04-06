@@ -43,23 +43,6 @@ const Dashboard = () => {
   }, []);
 
 
-
-  const handleSendToLoyalCustomers = async (campaignId) => {
-    try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/referral/email-loyal/${campaignId}`,
-        {},
-        { withCredentials: true }
-      );
-  
-      const msg = res.data.message;
-      alert(msg || "Emails sent to loyal customers!");
-    } catch (err) {
-      console.error("Error sending emails to loyal customers", err);
-      alert("Something went wrong");
-    }
-  };
-  
   
 
 
@@ -155,7 +138,7 @@ const Dashboard = () => {
                 <h3 className="text-lg font-semibold text-indigo-700 mb-2">{c.title}</h3>
                 <p className="text-sm mb-1"><strong>Task:</strong> {c.taskDescription}</p>
                 <p className="text-sm mb-1"><strong>Reward:</strong> {c.rewardDescription}</p>
-                <p className="text-sm mb-2 text-gray-600"><strong>Completed:</strong> {completed.length}</p>
+                <p className="text-sm mb-2 text-gray-600"><strong>Completed Referrals:</strong> {completed.length}</p>
                 
                 {user && (
                   <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 mt-2">
@@ -169,12 +152,6 @@ const Dashboard = () => {
                       🔗 Copy Referral Link
                     </button>
                   
-                    <button
-                      onClick={() => handleSendToLoyalCustomers(c._id)}
-                      className="flex-1 bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition text-sm"
-                    >
-                      🎯 Email Loyal Customers
-                    </button>
                   </div>
                   
                 )}

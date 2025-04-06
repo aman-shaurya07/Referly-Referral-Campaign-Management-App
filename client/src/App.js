@@ -11,7 +11,8 @@ import CampaignsPage from './pages/CampaignsPage';
 import MyReferrals from './pages/MyReferrals';
 import ReferralSubmissionPage from './pages/ReferralSubmissionPage';
 import CustomersPage from './pages/CustomersPage';
-import LoyalReferralSubmissionPage from "./pages/LoyalReferralSubmissionPage";
+import PromoterPage from './pages/PromoterPage';
+import ReferralSignupPage from './pages/ReferralSignupPage';
 
 
 
@@ -33,8 +34,8 @@ function App() {
           <Route path="/my-referrals" element={<MyReferrals />} />
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/ref/:campaignId/:referrerEmail" element={<ReferralSubmissionPage />} />
-          <Route path="/ref-loyal/:campaignId/:businessEmail/:loyalCustomerEmail" element={<LoyalReferralSubmissionPage />} />
-
+          <Route path="/promote/:campaignId/:promoterEmail" element={<PromoterPage />} />
+          <Route path="/referral/:campaignId/:promoterEmail" element={<ReferralSignupPage />} />
 
         </Routes>
       </Layout>

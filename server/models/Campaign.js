@@ -1,3 +1,5 @@
+
+
 const mongoose = require("mongoose");
 
 const campaignSchema = new mongoose.Schema({
@@ -14,7 +16,6 @@ const campaignSchema = new mongoose.Schema({
     type: Number,
     default: 0
   }
-  
 });
 
 module.exports = mongoose.model("Campaign", campaignSchema);
