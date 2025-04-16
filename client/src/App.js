@@ -1,18 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import CampaignCreation from './pages/CampaignCreation';
-import ValidateReward from './pages/ValidateReward';
-import UploadCRM from './pages/UploadCRM';
-import Analytics from "./pages/Analytics";
+import CampaignCreation from './pages/CreatCampaignPage';
+import ValidateReward from './pages/ValidateRewardPage';
+import UploadCRM from './pages/ManualCustomerAddPage';
+import Analytics from "./pages/AnalyticsPage";
 
 
 import Dashboard from './pages/Dashboard';
 import CampaignsPage from './pages/CampaignsPage';
-import MyReferrals from './pages/MyReferrals';
+import MyReferrals from './pages/ReferralsPage';
 import ReferralSubmissionPage from './pages/ReferralSubmissionPage';
 import CustomersPage from './pages/CustomersPage';
 import PromoterPage from './pages/PromoterPage';
-import ReferralSignupPage from './pages/ReferralSignupPage';
+import ReferralSignupPage from './pages/PromoterReferralSubmissionPage';
 
 
 
